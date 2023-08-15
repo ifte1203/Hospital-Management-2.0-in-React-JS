@@ -19,6 +19,11 @@ const Sidebar = () => {
                 </NavLink>
               </li>
               <li>
+                <NavLink to={"/clinic"}>
+                  <i className="fa fa-user-md" /> <span>Clinic</span>
+                </NavLink>
+              </li>
+              <li>
                 <a href="patients.html">
                   <i className="fa fa-wheelchair" /> <span>Patients</span>
                 </a>
