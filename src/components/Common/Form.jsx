@@ -1,25 +1,24 @@
 import React from "react";
 import { useState } from "react";
-
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import formValidationSchema from "./formValidationSchema";
 const Form = ({ fields, title, onSubmit, btnText }) => {
-  const [formData, setFormData] = useState({});
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isDirty, isValid },
+  } = useForm({
+    resolver: yupResolver(formValidationSchema),
+  });
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    onSubmit(formData);
+  const handleFormSubmit = (data) => {
+    onSubmit(data);
   };
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
+      <form>
         <div className="row">
           {fields.map((field) => (
             <div className={field.col} key={field.name}>
@@ -30,8 +29,7 @@ const Form = ({ fields, title, onSubmit, btnText }) => {
                     type="text"
                     name={field.name}
                     className="form-control"
-                    value={formData[field.name] || ""}
-                    onChange={handleInputChange}
+                    {...register(field.name)}
                   />
                 )}
                 {field.type === "email" && (
@@ -39,8 +37,7 @@ const Form = ({ fields, title, onSubmit, btnText }) => {
                     type="email"
                     name={field.name}
                     className="form-control"
-                    value={formData[field.name] || ""}
-                    onChange={handleInputChange}
+                    {...register(field.name)}
                   />
                 )}
                 {field.type === "password" && (
@@ -48,8 +45,7 @@ const Form = ({ fields, title, onSubmit, btnText }) => {
                     type="password"
                     name={field.name}
                     className="form-control"
-                    value={formData[field.name] || ""}
-                    onChange={handleInputChange}
+                    {...register(field.name)}
                   />
                 )}
                 {field.type === "number" && (
@@ -57,8 +53,7 @@ const Form = ({ fields, title, onSubmit, btnText }) => {
                     type="number"
                     name={field.name}
                     className="form-control"
-                    value={formData[field.name] || ""}
-                    onChange={handleInputChange}
+                    {...register(field.name)}
                   />
                 )}
                 {field.type === "date" && (
@@ -66,8 +61,7 @@ const Form = ({ fields, title, onSubmit, btnText }) => {
                     type="date"
                     name={field.name}
                     className="form-control"
-                    value={formData[field.name] || ""}
-                    onChange={handleInputChange}
+                    {...register(field.name)}
                   />
                 )}
                 {field.type === "time" && (
@@ -75,8 +69,7 @@ const Form = ({ fields, title, onSubmit, btnText }) => {
                     type="time"
                     name={field.name}
                     className="form-control"
-                    value={formData[field.name] || ""}
-                    onChange={handleInputChange}
+                    {...register(field.name)}
                   />
                 )}
                 {field.type === "radio" && (
@@ -84,8 +77,7 @@ const Form = ({ fields, title, onSubmit, btnText }) => {
                     type="radio"
                     name={field.name}
                     value={field.value}
-                    checked={formData[field.name] === field.value}
-                    onChange={handleInputChange}
+                    {...register(field.name)}
                   />
                 )}
                 {field.type === "checkbox" && (
@@ -93,17 +85,20 @@ const Form = ({ fields, title, onSubmit, btnText }) => {
                     type="checkbox"
                     name={field.name}
                     value={field.value}
-                    checked={formData[field.name] === field.value}
-                    onChange={handleInputChange}
+                    {...register(field.name)}
                   />
                 )}
-                {/* Add more cases for other input types */}
+                <p style={{ color: "red" }}>{errors[field.name]?.message}</p>
               </div>
             </div>
           ))}
         </div>
         <br />
-        <button type="submit" className="btn btn-primary">
+        <button
+          type="submit"
+          className="btn btn-primary"
+          onClick={handleSubmit(handleFormSubmit)}
+        >
           {btnText}
         </button>
       </form>

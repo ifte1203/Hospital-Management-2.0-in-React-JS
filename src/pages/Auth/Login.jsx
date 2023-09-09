@@ -1,6 +1,61 @@
-import React from "react";
-
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { toast } from "react-toastify";
+import * as yup from "yup";
+import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+import { loginHandle } from "../../slice/authSlice";
+import axios from "axios";
 const Login = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [data, setData] = useState([]);
+  const schema = yup.object().shape({
+    username: yup.string().required(),
+    password: yup.string().required(),
+    userType: yup.string().required(),
+  });
+  const { user, isAuthenticated, error } = useSelector((state) => state.auth);
+  console.log(isAuthenticated);
+  const getData = async () => {
+    try {
+      const result = await axios.get(
+        "http://13.127.113.130:3005/api/common/user-type-list"
+      );
+      setData(result.data.data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isDirty, isValid },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  useEffect(() => {
+    getData();
+    if (isAuthenticated) {
+      toast.success("success");
+      navigate("/dashboard");
+    }
+    if (error) {
+      console.log(error);
+      toast.error(error);
+    }
+    if (errors.email || errors.password) {
+      toast.error("pls enter");
+    }
+  }, [isAuthenticated, error, errors]);
+
+  const submitForm = (data) => {
+    dispatch(loginHandle(data));
+    console.log(data);
+  };
+  // console.log(user);
   return (
     <>
       <div className="main-wrapper account-wrapper">
@@ -17,24 +72,52 @@ const Login = () => {
                   </a>
                 </div>
                 <div className="form-group">
-                  <label>Username or Email</label>
-                  <input type="text" autofocus="" className="form-control" />
+                  <label>Username </label>
+                  <input
+                    type="text"
+                    name="username"
+                    autofocus=""
+                    className="form-control"
+                    {...register("username")}
+                  />
+                  <p style={{ color: "red" }}>{errors.username?.message}</p>
                 </div>
                 <div className="form-group">
                   <label>Password</label>
-                  <input type="password" className="form-control" />
+                  <input
+                    type="password"
+                    name="password"
+                    className="form-control"
+                    {...register("password")}
+                  />
+                  <p style={{ color: "red" }}>{errors.password?.message}</p>
                 </div>
-                <div className="form-group text-right">
-                  <a href="forgot-password.html">Forgot your password?</a>
+                <div className="form-group">
+                  <label>Type</label>
+                  <select
+                    className="form-control"
+                    name="userType"
+                    {...register("userType")}
+                  >
+                    <option>Select Type</option>
+                    {Array.isArray(data) &&
+                      data.map((val) => (
+                        <option key={val.id} value={val.name}>
+                          {val.name}
+                        </option>
+                      ))}
+                  </select>
+                  <p style={{ color: "red" }}>{errors.userType?.message}</p>
                 </div>
+
                 <div className="form-group text-center">
-                  <button type="submit" className="btn btn-primary account-btn">
+                  <button
+                    type="submit"
+                    className="btn btn-primary account-btn"
+                    onClick={handleSubmit(submitForm)}
+                  >
                     Login
                   </button>
-                </div>
-                <div className="text-center register-link">
-                  Don’t have an account?{" "}
-                  <a href="register.html">Register Now</a>
                 </div>
               </form>
             </div>

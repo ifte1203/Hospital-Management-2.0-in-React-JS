@@ -1,6 +1,7 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
+  const location = useLocation();
   return (
     <>
       <div className="sidebar" id="sidebar">
@@ -8,17 +9,29 @@ const Sidebar = () => {
           <div id="sidebar-menu" className="sidebar-menu">
             <ul>
               <li className="menu-title">Main</li>
-              <li className="active">
-                <NavLink to={"/dashboard"}>
+              <li
+                className={location.pathname === "/dashboard" ? "active" : ""}
+              >
+                <NavLink to="/dashboard">
                   <i className="fa fa-dashboard" /> <span>Dashboard</span>
                 </NavLink>
               </li>
-              <li>
+              <li className={location.pathname === "/doctor" ? "active" : ""}>
                 <NavLink to={"/doctor"}>
                   <i className="fa fa-user-md" /> <span>Doctors</span>
                 </NavLink>
               </li>
+              {/* <li>
+                <NavLink to={"/entity/clinic"}>
+                  <i className="fa fa-user-md" /> <span>Clinic</span>
+                </NavLink>
+              </li>
               <li>
+                <NavLink to={"/entity/doctor"}>
+                  <i className="fa fa-wheelchair" /> <span>Patients</span>
+                </NavLink>
+              </li> */}
+              <li className={location.pathname === "/clinic" ? "active" : ""}>
                 <NavLink to={"/clinic"}>
                   <i className="fa fa-user-md" /> <span>Clinic</span>
                 </NavLink>
@@ -39,7 +52,7 @@ const Sidebar = () => {
                   <span>Doctor Schedule</span>
                 </a>
               </li>
-              <li>
+              {/* <li>
                 <a href="departments.html">
                   <i className="fa fa-hospital-o" /> <span>Departments</span>
                 </a>
@@ -55,12 +68,6 @@ const Sidebar = () => {
                   </li>
                   <li>
                     <a href="leaves.html">Leaves</a>
-                  </li>
-                  <li>
-                    <a href="holidays.html">Holidays</a>
-                  </li>
-                  <li>
-                    <a href="attendance.html">Attendance</a>
                   </li>
                 </ul>
               </li>
@@ -86,8 +93,8 @@ const Sidebar = () => {
                     <a href="provident-fund.html">Provident Fund</a>
                   </li>
                 </ul>
-              </li>
-              <li className="submenu">
+              </li> */}
+              {/* <li className="submenu">
                 <a href="#">
                   <i className="fa fa-book" /> <span> Payroll </span>{" "}
                   <span className="menu-arrow" />
@@ -100,16 +107,16 @@ const Sidebar = () => {
                     <a href="salary-view.html"> Payslip </a>
                   </li>
                 </ul>
-              </li>
-              <li>
+              </li> */}
+              {/* <li>
                 <a href="chat.html">
                   <i className="fa fa-comments" /> <span>Chat</span>{" "}
                   <span className="badge badge-pill bg-primary float-right">
                     5
                   </span>
                 </a>
-              </li>
-              <li className="submenu">
+              </li> */}
+              {/* <li className="submenu">
                 <a href="#">
                   <i className="fa fa-video-camera camera" />{" "}
                   <span> Calls</span> <span className="menu-arrow" />
@@ -125,8 +132,8 @@ const Sidebar = () => {
                     <a href="incoming-call.html">Incoming Call</a>
                   </li>
                 </ul>
-              </li>
-              <li className="submenu">
+              </li> */}
+              {/* <li className="submenu">
                 <a href="#">
                   <i className="fa fa-envelope" /> <span> Email</span>{" "}
                   <span className="menu-arrow" />
@@ -142,8 +149,8 @@ const Sidebar = () => {
                     <a href="mail-view.html">Mail View</a>
                   </li>
                 </ul>
-              </li>
-              <li className="submenu">
+              </li> */}
+              {/* <li className="submenu">
                 <a href="#">
                   <i className="fa fa-commenting-o" /> <span> Blog</span>{" "}
                   <span className="menu-arrow" />
@@ -167,8 +174,8 @@ const Sidebar = () => {
                 <a href="assets.html">
                   <i className="fa fa-cube" /> <span>Assets</span>
                 </a>
-              </li>
-              <li>
+              </li> */}
+              {/* <li>
                 <a href="activities.html">
                   <i className="fa fa-bell-o" /> <span>Activities</span>
                 </a>
@@ -186,8 +193,8 @@ const Sidebar = () => {
                     <a href="invoice-reports.html"> Invoice Report </a>
                   </li>
                 </ul>
-              </li>
-              <li>
+              </li> */}
+              {/* <li>
                 <a href="settings.html">
                   <i className="fa fa-cog" /> <span>Settings</span>
                 </a>
@@ -229,8 +236,8 @@ const Sidebar = () => {
                     <a href="form-vertical.html">Vertical Form</a>
                   </li>
                 </ul>
-              </li>
-              <li className="submenu">
+              </li> */}
+              {/* <li className="submenu">
                 <a href="#">
                   <i className="fa fa-table" /> <span> Tables</span>{" "}
                   <span className="menu-arrow" />
@@ -243,8 +250,8 @@ const Sidebar = () => {
                     <a href="tables-datatables.html">Data Table</a>
                   </li>
                 </ul>
-              </li>
-              <li>
+              </li> */}
+              {/* <li>
                 <a href="calendar.html">
                   <i className="fa fa-calendar" /> <span>Calendar</span>
                 </a>
@@ -331,7 +338,7 @@ const Sidebar = () => {
                     </a>
                   </li>
                 </ul>
-              </li>
+              </li> */}
             </ul>
           </div>
         </div>

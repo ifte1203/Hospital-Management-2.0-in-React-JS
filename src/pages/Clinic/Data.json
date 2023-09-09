@@ -1,0 +1,65 @@
+{
+    "code": 2000,
+    "msg": "Success",
+    "data": [
+        {
+            "clinic_id": 22,
+            "enterprise_id": 1,
+            "code": "ABC-G89",
+            "name": "Abcd Clinic 2",
+            "registration_no": "C789",
+            "clinic_loyalty_centre_no": "a02",
+            "clinic_type": "Clinic",
+            "phone": "",
+            "email": "abcd2@gmail.com",
+            "website": "",
+            "fax": "",
+            "logo": "https://s3.url/path",
+            "location_map_url": "asdf",
+            "time_slot": "20",
+            "gstin_no": "",
+            "type": "onsite",
+            "telemedicine": "no",
+            "doctor_presence": "full-time",
+            "specialist": "yes",
+            "lab_test": "yes",
+            "is_active": 1,
+            "updated_by": 1,
+            "created_at": null,
+            "updated_at": "2023-08-31T15:35:52.000Z",
+            "clinic_addresses": [
+                {
+                    "address_id": 10,
+                    "address": "1, Near xyz, 12 street",
+                    "city_id": 1,
+                    "pincode": ""
+                }
+            ],
+            "clinic_contacts": [
+                {
+                    "mobile_id": 8,
+                    "mobile_number": "9879876781"
+                },
+                {
+                    "mobile_id": 9,
+                    "mobile_number": "9879879800"
+                }
+            ],
+            "clinic_availabilities": [
+                {
+                    "clinic_avail_id": 7,
+                    "day": "Monday",
+                    "from_time": "09:00:00",
+                    "to_time": "17:00:00"
+                },
+                {
+                    "clinic_avail_id": 8,
+                    "day": "Tuesday",
+                    "from_time": "09:00:00",
+                    "to_time": "17:00:00"
+                }
+            ]
+        }
+    ],
+    "error": null
+}
