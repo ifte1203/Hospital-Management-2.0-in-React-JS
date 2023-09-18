@@ -5,10 +5,15 @@ import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import formValidationSchema from "../../components/Common/formValidationSchema";
-import { upload, validateImage } from "../../components/Common/fileUpload";
-
+import { validateImage, upload } from "../../components/Common/fileUpload";
+import { motion } from "framer-motion";
+import { buttonVariants } from "../../../reusable/animation";
+import { createClinic } from "../../slice/clinicSlice";
+import { useDispatch } from "react-redux";
 const Create = () => {
   const [mobileNumbers, setMobileNumbers] = useState([""]);
+  const enterpriseId = 1;
+  const dispatch = useDispatch();
 
   const initialSelectedDays = [];
   const [selectedDays, setSelectedDays] = useState(initialSelectedDays);
@@ -41,6 +46,11 @@ const Create = () => {
   const addMobileNumber = () => {
     setMobileNumbers([...mobileNumbers, ""]); // Add a new empty mobile number field
   };
+  const removeMobileNumber = (index) => {
+    const updatedMobileNumbers = [...mobileNumbers];
+    updatedMobileNumbers.splice(index, 1); // Remove the mobile number at the specified index
+    setMobileNumbers(updatedMobileNumbers);
+  };
 
   const handleMobileNumberChange = (index, value) => {
     const updatedMobileNumbers = [...mobileNumbers];
@@ -52,6 +62,7 @@ const Create = () => {
     register,
     handleSubmit,
     getValues,
+    setValue,
     formState: { errors, isDirty, isValid },
   } = useForm({
     resolver: yupResolver(formValidationSchema),
@@ -61,12 +72,34 @@ const Create = () => {
     },
   });
 
-  const handleFileChange = async () => {
-    const image = getValues("image");
-    const filename = image[0].name;
+  // const handleFileChange = async () => {
+  //   const image = getValues("image");
+  //   const file = image[0];
+  //   console.log(image[0].name);
+
+  //   const validationResult = validateImage(
+  //     image,
+  //     ["jpg", "jpeg", "png", "gif", "tif"],
+  //     3 * 1024 * 1024
+  //   );
+  //   if (validationResult === true) {
+  //     try {
+  //       const s3Url = await upload(file);
+  //       // console.log("result", s3Url);
+  //       setValue("image", "hello");
+  //       console.log(image);
+  //     } catch (error) {
+  //       console.log("s3 error", error);
+  //     }
+  //   }
+  // };
+
+  const onSubmit = async (data) => {
+    let image = getValues("logo");
+    console.log(image);
+    const file = image && image[0];
     console.log(image[0].name);
 
-    console.log("hi");
     const validationResult = validateImage(
       image,
       ["jpg", "jpeg", "png", "gif", "tif"],
@@ -74,34 +107,24 @@ const Create = () => {
     );
     if (validationResult === true) {
       try {
-        const s3Url = await upload(filename);
+        const s3Url = await upload(file);
         console.log("result", s3Url);
+        data.logo = s3Url;
+        console.log(data.logo);
+
+        const formDataToSend = {
+          ...data,
+          enterpriseId,
+        };
+        console.log("newData", formDataToSend);
+        dispatch(createClinic(formDataToSend));
       } catch (error) {
         console.log("s3 error", error);
       }
     }
   };
-  const handleFormSubmit = (data) => {
-    // Handle form submission for the first component
-    console.log("Form data:", data);
-  };
-
-  const onSubmit = (data) => {
-    // Gather and format the clinic availability data
-    const formattedAvailability = tableData.map((item) => ({
-      day: item.day,
-      timings: item.timings.map((timing) => ({
-        from: timing.from,
-        to: timing.to,
-      })),
-    }));
-
-    // Update the clinicAvailability state with the formatted data
-    setClinicAvailability(formattedAvailability);
-    console.log(clinicAvailability);
-    console.log(data);
-  };
   console.log(errors);
+
   return (
     <Layout>
       <div className="content">
@@ -135,10 +158,10 @@ const Create = () => {
                     <input
                       className="form-control"
                       type="text"
-                      {...register("registration_number")}
+                      {...register("registrationNo")}
                     />
                     <p style={{ color: "red" }}>
-                      {errors.registration_number?.message}
+                      {errors.registrationNo?.message}
                     </p>
                   </div>
                 </div>
@@ -148,7 +171,14 @@ const Create = () => {
                       Clinic Loyalty Centre No.
                       <span className="text-danger">*</span>
                     </label>
-                    <input className="form-control" type="text" />
+                    <input
+                      className="form-control"
+                      type="text"
+                      {...register("clinicLoyaltyCentreNo")}
+                    />
+                    <p style={{ color: "red" }}>
+                      {errors.clinicLoyaltyCentreNo?.message}
+                    </p>
                   </div>
                 </div>
                 <div className="col-sm-6">
@@ -159,16 +189,14 @@ const Create = () => {
                     <select
                       name="clinic_type"
                       className="form-control"
-                      {...register("clinic_type")}
+                      {...register("clinicType")}
                     >
                       <option value="">Select Clinic Type</option>
                       <option value="Clinic">Clinic</option>
                       <option value="Pathology Lab">Pathology Lab</option>
                       <option value="Hospital">Hospital</option>
                     </select>
-                    <p style={{ color: "red" }}>
-                      {errors.clinic_type?.message}
-                    </p>
+                    <p style={{ color: "red" }}>{errors.clinicType?.message}</p>
                   </div>
                 </div>
                 <div className="col-sm-6">
@@ -186,16 +214,14 @@ const Create = () => {
                 </div>
                 <div className="col-sm-6">
                   <div className="form-group">
-                    <label>Alternate Email</label>
-                    <input
+                    {/* <input
                       className="form-control"
-                      type="email"
-                      {...register("alternate_email")}
-                    />
+                      type="text"
+                      value={"1"}
+                      {...register("enterpriseId")}
+                    /> */}
                   </div>
-                  <p style={{ color: "red" }}>
-                    {errors.alternate_email?.message}
-                  </p>
+                  {/* <p style={{ color: "red" }}>{errors.enterpriseId?.message}</p> */}
                 </div>
                 <div className="col-sm-6">
                   <div className="form-group">
@@ -280,7 +306,7 @@ const Create = () => {
                           type="radio"
                           name="type"
                           className="form-check-input"
-                          {...register("doctorPresence")}
+                          {...register(" doctorPresence")}
                         />
                         Part time
                       </label>
@@ -451,7 +477,7 @@ const Create = () => {
                         <input
                           type="text"
                           className="form-control"
-                          {...register(`mobile[${index}]`)}
+                          {...register(`mobileNumber[${index}]`)}
                         />
                         {mobileNumbers.length > 1 && ( // Render delete button only if there's more than one field
                           <button
@@ -472,7 +498,7 @@ const Create = () => {
                       <i className="fa fa-plus"></i>
                     </button>
                   </div>
-                  <p style={{ color: "red" }}>{errors.mobile?.message}</p>
+                  <p style={{ color: "red" }}>{errors.mobileNumber?.message}</p>
                 </div>
                 <div className="col-md-6">
                   <div className="form-group">
@@ -502,9 +528,9 @@ const Create = () => {
                       <div className="upload-input">
                         <input
                           type="file"
-                          onChange={handleFileChange()}
+                          // onChange={handleFileChange()}
                           className="form-control"
-                          {...register("image")}
+                          {...register("logo")}
                         />
                       </div>
                     </div>
@@ -519,10 +545,12 @@ const Create = () => {
                       type="text"
                       name="location_map_url"
                       className="form-control"
-                      {...register("location")}
+                      {...register("locationMapUrl")}
                     />
                   </div>
-                  <p style={{ color: "red" }}>{errors.location?.message}</p>
+                  <p style={{ color: "red" }}>
+                    {errors.locationMapUrl?.message}
+                  </p>
                 </div>
                 <div className="col-sm-6 col-md-6 col-lg-3">
                   <div className="form-group">
@@ -546,10 +574,10 @@ const Create = () => {
                       type="text"
                       name="GSTIN"
                       className="form-control"
-                      {...register("gst")}
+                      {...register("gstinNo")}
                     />
                   </div>
-                  <p style={{ color: "red" }}>{errors.gst?.message}</p>
+                  <p style={{ color: "red" }}>{errors.gstinNo?.message}</p>
                 </div>
               </div>
 
@@ -625,12 +653,14 @@ const Create = () => {
                 </div>
               </div>
               <div className="m-t-20 text-center">
-                <button
+                <motion.button
                   className="btn btn-primary submit-btn"
                   onClick={handleSubmit(onSubmit)}
+                  variants={buttonVariants}
+                  whileHover="hover"
                 >
                   Create Clinic
-                </button>
+                </motion.button>
               </div>
             </form>
           </div>

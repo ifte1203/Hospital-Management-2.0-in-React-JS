@@ -12,7 +12,7 @@ export const loginHandle = createAsyncThunk(
   
         if (response.data.code === 2000) {
         //   alert('Login successful');
-        localStorage.setItem('token',response.data.data.access_token);
+        sessionStorage.setItem('token',response.data.data.access_token);
          console.log(response.data.data.token);
           return response.data.data;
 

@@ -7,6 +7,8 @@ import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { loginHandle } from "../../slice/authSlice";
 import axios from "axios";
+import { motion } from "framer-motion";
+import { buttonVariants } from "../../../reusable/animation";
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -38,13 +40,15 @@ const Login = () => {
 
   useEffect(() => {
     getData();
+
     if (isAuthenticated) {
       toast.success("success");
       navigate("/dashboard");
     }
+
     if (error) {
       console.log(error);
-      toast.error(error);
+      toast.error(error.message);
     }
     if (errors.email || errors.password) {
       toast.error("pls enter");
@@ -58,7 +62,12 @@ const Login = () => {
   // console.log(user);
   return (
     <>
-      <div className="main-wrapper account-wrapper">
+      <motion.div
+        initial={{ y: -800 }}
+        animate={{ y: 10 }}
+        transition={{ delay: 0.5, stiffness: 120 }}
+        className="main-wrapper account-wrapper"
+      >
         <div className="account-page">
           <div className="account-center">
             <div className="account-box">
@@ -111,19 +120,21 @@ const Login = () => {
                 </div>
 
                 <div className="form-group text-center">
-                  <button
+                  <motion.button
+                    variants={buttonVariants}
+                    whileHover="hover"
                     type="submit"
                     className="btn btn-primary account-btn"
                     onClick={handleSubmit(submitForm)}
                   >
                     Login
-                  </button>
+                  </motion.button>
                 </div>
               </form>
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </>
   );
 };

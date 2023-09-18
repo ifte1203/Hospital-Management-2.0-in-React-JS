@@ -7,32 +7,12 @@ import { getclinicDetails } from "../../slice/clinicSlice";
 
 const Show = () => {
   const { id } = useParams();
-  const [clinic, setClinic] = useState([]);
-  // const [index, setIndex] = useState(1);
   const dispatch = useDispatch();
 
-  const getClinic = async (id) => {
-    try {
-      const result = await axios.get(
-        `http://13.127.113.130:3005/api/clinics?clinicId=${id}`,
-        {
-          headers: {
-            "x-authentication-token":
-              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InVzZXJuYW1lIjoicGJhdHJhIiwidXNlclR5cGUiOiJBZG1pbiJ9LCJpYXQiOjE2OTQyMzY0MjksImV4cCI6MTY5NDI3MjQyOX0.G7DrwyOj_3zfckMBoD7dy1oqnw15DdP_WWCxf_jYHr0",
-          },
-        }
-      );
-      console.log(result.data.data);
-      if (result.data.code === 2000) {
-        setClinic(result.data.data);
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
+  const { clinicDetail, error, clinic } = useSelector((state) => state.clinic);
+  console.log(clinicDetail);
 
   useEffect(() => {
-    getClinic(id);
     dispatch(getclinicDetails(id));
   }, []);
 
@@ -48,7 +28,7 @@ const Show = () => {
               <div className="card-body">
                 <h4>Clinic Detail</h4>
                 <div className="table-responsive">
-                  {clinic.map((data, key) => {
+                  {clinicDetail.map((data, key) => {
                     return (
                       <>
                         <table className="table table-bordered">
@@ -58,9 +38,9 @@ const Show = () => {
                             </td>
                             <td colSpan={2} rowSpan={3} align="center">
                               <img
-                                src="/assets/img/logo.png"
+                                src="https://upload-artifacts-medic.s3.ap-south-1.amazonaws.com/bgimage.jpg"
                                 height={100}
-                                alt=""
+                                alt="logo"
                               />
                             </td>
                           </tr>
@@ -138,8 +118,8 @@ const Show = () => {
 
                 <h4 className="mt-4">Clinic Addresses</h4>
                 <div className="table-responsive">
-                  {clinic &&
-                    clinic.map((data, key) => {
+                  {clinicDetail &&
+                    clinicDetail.map((data, key) => {
                       return (
                         <>
                           <table className="table table-bordered">
@@ -166,8 +146,8 @@ const Show = () => {
 
                 <h4 className="mt-4">Clinic Contacts</h4>
                 <div className="table-responsive">
-                  {clinic &&
-                    clinic.map((data, key) => {
+                  {clinicDetail &&
+                    clinicDetail.map((data, key) => {
                       return (
                         <>
                           <table className="table table-bordered">
@@ -190,8 +170,8 @@ const Show = () => {
 
                 <h4 className="mt-4">Clinic Availabilities</h4>
                 <div className="table-responsive">
-                  {clinic &&
-                    clinic.map((data, key) => {
+                  {clinicDetail &&
+                    clinicDetail.map((data, key) => {
                       return (
                         <>
                           <table className="table table-bordered">
