@@ -1,20 +1,22 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const token = sessionStorage.getItem('token');
-console.log(token);
+const getToken = () => {
+  let token = sessionStorage.getItem('token');
+  return token;
+}
 
-  export const getClinics = createAsyncThunk(
-    "clinic/getClinics",
-    async (rejectWithValue) => {
-        console.log('clinics listing');
+export const getClinics = createAsyncThunk(
+  "clinic/getClinics",
+  async (rejectWithValue) => {
+    console.log('clinics listing');
         try {
             const response = await axios.get(
               `http://13.127.113.130:3005/api/clinics?enterpriseId=1`,
               {
                 headers: {
                   "x-authentication-token":
-                    token,
+                    getToken(),
                 },
               }
             );
@@ -40,7 +42,7 @@ console.log(token);
               {
                 headers: {
                   "x-authentication-token":
-                    token,
+                  getToken(),
                 },
               }
             );
@@ -66,7 +68,7 @@ console.log(token);
           {
             headers: {
               "x-authentication-token":
-                token,
+              getToken(),
             },
           }
         );
@@ -91,7 +93,7 @@ console.log(token);
           `http://13.127.113.130:3005/api/clinics/delete-contact?contactId=${id}`, {
           headers: {
             "x-authentication-token":
-              token,
+            getToken(),
           },
         });
 
@@ -103,6 +105,111 @@ console.log(token);
     }
   )
 
+  export const updateAvailability = createAsyncThunk(
+    "clinic/updateAvailability",
+    async ({data, id}, { rejectWithValue }) => {
+      console.log(data, id);
+      try {
+        const response = await axios.put(
+          `http://13.127.113.130:3005/api/clinics/update-availability?clinicId=${id}`,
+          data,
+          {
+            headers: {
+              "x-authentication-token":
+              getToken(),
+            },
+          }
+        );
+        // console.log(response);
+        if (response.data.code === 2000) {
+          console.log(response.data.data);
+          return response.data.data;
+        }
+      } catch (error) {
+        console.error("An error occurred ", error);
+        return rejectWithValue(error);
+      }
+    }
+  );
+
+  export const deleteAvailability = createAsyncThunk(
+    "clinic/deleteAvailability",
+    async ({id, data}, { rejectWithValue }) => {
+      console.log('id: ',id, ' data: ', data);
+      try {
+        const response = await axios.delete(
+          `http://13.127.113.130:3005/api/clinics/delete-availability/${id}`,
+          {
+            headers: {
+              "x-authentication-token": getToken(),
+            },
+            data: data, // Your data object should be inside the config object
+          }
+        );
+        console.log(response);
+        // if (response.data.code === 2000) {
+        //   console.log(response.data.data);
+        //   return response.data.data;
+        // }
+      } catch (error) {
+        console.error("An error occurred ", error);
+        return rejectWithValue(error);
+      }
+    }
+  );
+
+  export const updateContact = createAsyncThunk(
+    "clinic/updateContact",
+    async ({data, id}, { rejectWithValue }) => {
+      // console.log('id: ', id,' data: ',data);
+      try {
+        const response = await axios.put(
+          `http://13.127.113.130:3005/api/clinics/update-contact?clinicId=${id}`,
+          data,
+          {
+            headers: {
+              "x-authentication-token":
+              getToken(),
+            },
+          }
+        );
+        // console.log(response);
+        if (response.data.code === 2000) {
+          console.log(response.data.data);
+          return response.data.data;
+        }
+      } catch (error) {
+        console.error("An error occurred ", error);
+        return rejectWithValue(error);
+      }
+    }
+  );
+
+  export const deleteContact = createAsyncThunk(
+    "clinic/deleteContact",
+    async (id, { rejectWithValue }) => {
+      console.log('id: ',id);
+      try {
+        const response = await axios.delete(
+          `http://13.127.113.130:3005/api/clinics/delete-contact?contactId=${id}`,
+          {
+            headers: {
+              "x-authentication-token": getToken(),
+            },
+          }
+        );
+        console.log(response);
+        // if (response.data.code === 2000) {
+        //   console.log(response.data.data);
+        //   return response.data.data;
+        // }
+      } catch (error) {
+        console.error("An error occurred ", error);
+        return rejectWithValue(error);
+      }
+    }
+  );
+
 const initialState = {
   clinicDetail: [],
   clinic:[],
@@ -110,6 +217,11 @@ const initialState = {
   error: null,
   isAuthenticated: false,
   success: false,
+  deleted: false,
+  updatedAvailability: false,
+  deletedAvailability: false,
+  updatedContact: false,
+  deletedContact: false,
 };
 
 
@@ -117,7 +229,11 @@ const initialState = {
 export const clinicSlice = createSlice({
   name: "clinicDetail",
   initialState,
-  reducers: {},
+  reducers: {
+    resetSuccess: (state) => {
+      state.success = false;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getclinicDetails.pending, (state, action) => {
@@ -163,13 +279,63 @@ export const clinicSlice = createSlice({
       })
       .addCase(deleteClinic.fulfilled, (state, action) => {
         state.loading = false;
-        state.success = true;
+        state.deleted = true;
       })
       .addCase(deleteClinic.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
+      .addCase(updateAvailability.pending, (state, action) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateAvailability.fulfilled, (state, action) => {
+        state.loading = false;
+        state.updatedAvailability = true;
+      })
+      .addCase(updateAvailability.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(deleteAvailability.pending, (state, action) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteAvailability.fulfilled, (state, action) => {
+        state.loading = false;
+        state.deletedAvailability = true;
+      })
+      .addCase(deleteAvailability.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(updateContact.pending, (state, action) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateContact.fulfilled, (state, action) => {
+        state.loading = false;
+        state.updatedContact = true;
+      })
+      .addCase(updateContact.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(deleteContact.pending, (state, action) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteContact.fulfilled, (state, action) => {
+        state.loading = false;
+        state.deletedContact = true;
+      })
+      .addCase(deleteContact.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
   },
 });
+
+export const { resetSuccess } = clinicSlice.actions;
 
 export default clinicSlice.reducer;

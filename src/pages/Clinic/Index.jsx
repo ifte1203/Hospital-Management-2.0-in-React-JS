@@ -6,28 +6,22 @@ import { useDispatch, useSelector } from "react-redux";
 import { getClinics, deleteClinic } from "../../slice/clinicSlice";
 // Icons
 import { Trash, Eye, Pencil } from "lucide-react";
-
-const data = [
-  {
-    id: 1,
-    name: "John",
-    age: 30,
-  },
-  {
-    id: 2,
-    name: "Sara",
-    age: 25,
-  },
-];
+import { toast } from "react-toastify";
 
 const Index = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { error, success, clinic } = useSelector((state) => state.clinic);
+  const { error, deleted, clinic } = useSelector((state) => state.clinic);
   console.log(clinic);
 
   useEffect(() => {
     dispatch(getClinics());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (deleted) {
+      toast.success("Clinic Deleted Successfully!");
+    }
   }, []);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -75,28 +69,14 @@ const Index = () => {
           // console.log(original);
           return (
             <>
-              {/* <button
-                className="btn btn-show"
-                onClick={() => handleShow(original.id)}
-              >
-                Show
-              </button> */}
               <NavLink className="" to={`/clinic/show/${original.clinic_id}`}>
                 <Eye color="blue" />
               </NavLink>
               &nbsp;&nbsp;
               <NavLink className="" to={`/clinic/edit/${original.clinic_id}`}>
-                {/* <i className="fa fa-pencil" style={{ fontSize: "20px" }}></i> */}
                 <Pencil />
               </NavLink>
               &nbsp;&nbsp;
-              {/* <NavLink
-                className="btn btn-info"
-                to={`/clinic-availability/edit/${original.clinic_id}`}
-              >
-                Update Availability
-              </NavLink>
-              &nbsp;&nbsp; */}
               <a
                 className=""
                 href="#"
@@ -104,10 +84,6 @@ const Index = () => {
                 data-toggle="modal"
                 data-target={`#delete_clinic${original.clinic_id}`}
               >
-                {/* <i
-                  className="fa fa-trash"
-                  style={{ fontSize: "20px", color: "red" }}
-                ></i> */}
                 <Trash color="red" />
               </a>
               <div
@@ -136,13 +112,11 @@ const Index = () => {
                           Close
                         </a>
                         <button
-                          type="submit"
                           onClick={() => {
                             dispatch(deleteClinic(original.clinic_id));
-                            navigate("/dashboard");
-                            // alert(success);
                           }}
                           className="btn btn-danger"
+                          data-dismiss="modal"
                         >
                           Delete
                         </button>
@@ -181,36 +155,6 @@ const Index = () => {
               <MaterialReactTable columns={columns} data={clinic} />
             </div>
           </div>
-          {/* {isModalOpen && (
-            <div className="modal fade show" tabIndex="-1" role="dialog">
-              <div className="modal-dialog modal-dialog-centered">
-                <div className="modal-content">
-                  <div className="modal-body text-center">
-                    <img
-                      src="assets/img/sent.png"
-                      alt=""
-                      width="50"
-                      height="46"
-                    />
-                    <h3>Are you sure you want to delete this Doctor?</h3>
-                    <div className="m-t-20">
-                      <a
-                        href="#"
-                        className="btn btn-white"
-                        onClick={closeModal}
-                      >
-                        Close
-                      </a>
-                      <button type="submit" className="btn btn-danger">
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="modal-backdrop fade show"></div>
-            </div>
-          )} */}
         </div>
       </Layout>
     </>

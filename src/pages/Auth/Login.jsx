@@ -9,6 +9,7 @@ import { loginHandle } from "../../slice/authSlice";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { buttonVariants } from "../../../reusable/animation";
+
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();

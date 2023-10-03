@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Form from "../../components/Common/Form";
 import Layout from "../../components/Layout";
 import * as yup from "yup";
@@ -9,15 +10,33 @@ import { validateImage, upload } from "../../components/Common/fileUpload";
 import { motion } from "framer-motion";
 import { buttonVariants } from "../../../reusable/animation";
 import { createClinic } from "../../slice/clinicSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { getCountry, getState, getCity } from "../../slice/locationSlice";
+import { resetSuccess } from "../../slice/clinicSlice";
+import { toast } from "react-toastify";
+
 const Create = () => {
   const [mobileNumbers, setMobileNumbers] = useState([""]);
   const enterpriseId = 1;
+  const navigate = useNavigate();
+  const updatedBy = 1;
   const dispatch = useDispatch();
+  const [cityId, setCityId] = useState("");
+  const handleCityChange = (event) => {
+    const selectedOption = event.target.options[event.target.selectedIndex];
+    console.log(selectedOption);
+    const selectedCityId = selectedOption.getAttribute("data-cityid");
+    const cityIdAsNumber = parseInt(selectedCityId, 10);
+    setCityId(cityIdAsNumber);
+  };
+  console.log(cityId);
 
   const initialSelectedDays = [];
   const [selectedDays, setSelectedDays] = useState(initialSelectedDays);
   console.log(selectedDays);
+  const { country, state, city } = useSelector((state) => state.location);
+  const { success } = useSelector((state) => state.clinic);
+  console.log(city);
 
   const [rows, setRows] = useState([{ day: "", fromTime: "", toTime: "" }]);
 
@@ -66,33 +85,7 @@ const Create = () => {
     formState: { errors, isDirty, isValid },
   } = useForm({
     resolver: yupResolver(formValidationSchema),
-    defaultValues: {
-      selectedDays: [],
-      mobile: [],
-    },
   });
-
-  // const handleFileChange = async () => {
-  //   const image = getValues("image");
-  //   const file = image[0];
-  //   console.log(image[0].name);
-
-  //   const validationResult = validateImage(
-  //     image,
-  //     ["jpg", "jpeg", "png", "gif", "tif"],
-  //     3 * 1024 * 1024
-  //   );
-  //   if (validationResult === true) {
-  //     try {
-  //       const s3Url = await upload(file);
-  //       // console.log("result", s3Url);
-  //       setValue("image", "hello");
-  //       console.log(image);
-  //     } catch (error) {
-  //       console.log("s3 error", error);
-  //     }
-  //   }
-  // };
 
   const onSubmit = async (data) => {
     let image = getValues("logo");
@@ -115,6 +108,8 @@ const Create = () => {
         const formDataToSend = {
           ...data,
           enterpriseId,
+          updatedBy,
+          cityId,
         };
         console.log("newData", formDataToSend);
         dispatch(createClinic(formDataToSend));
@@ -123,8 +118,24 @@ const Create = () => {
       }
     }
   };
-  console.log(errors);
+  const selectedCity = getValues("specialist");
+  console.log(selectedCity);
 
+  useEffect(() => {
+    dispatch(getCountry());
+    if (success) {
+      toast.success("clinic created");
+      dispatch(resetSuccess());
+    }
+  }, [dispatch, success]);
+  const handleCountryChange = (selectedCountryId) => {
+    dispatch(getState(selectedCountryId));
+  };
+  const handleStateChange = (id) => {
+    console.log(id);
+    dispatch(getCity(id));
+  };
+  console.log(errors);
   return (
     <Layout>
       <div className="content">
@@ -258,6 +269,7 @@ const Create = () => {
                         <input
                           type="radio"
                           name="type"
+                          value="nearsite"
                           className="form-check-input"
                           {...register("type")}
                         />
@@ -275,6 +287,7 @@ const Create = () => {
                         <input
                           type="radio"
                           name="telemedicine"
+                          value="yes"
                           className="form-check-input"
                           {...register("telemedicine")}
                         />
@@ -287,6 +300,7 @@ const Create = () => {
                           type="radio"
                           name="telemedicine"
                           className="form-check-input"
+                          value="no"
                           {...register("telemedicine")}
                         />
                         No
@@ -305,8 +319,9 @@ const Create = () => {
                         <input
                           type="radio"
                           name="type"
+                          value="part time"
                           className="form-check-input"
-                          {...register(" doctorPresence")}
+                          {...register("doctorPresence")}
                         />
                         Part time
                       </label>
@@ -316,6 +331,7 @@ const Create = () => {
                         <input
                           type="radio"
                           name="type"
+                          value="full time"
                           className="form-check-input"
                           {...register("doctorPresence")}
                         />
@@ -335,6 +351,7 @@ const Create = () => {
                         <input
                           type="radio"
                           name="specialist"
+                          value="yes"
                           className="form-check-input"
                           {...register("specialist")}
                         />
@@ -346,6 +363,7 @@ const Create = () => {
                         <input
                           type="radio"
                           name="specialist"
+                          value="no"
                           className="form-check-input"
                           {...register("specialist")}
                         />
@@ -363,6 +381,7 @@ const Create = () => {
                         <input
                           type="radio"
                           name="lab_testing"
+                          value="yes"
                           className="form-check-input"
                           {...register("labTest")}
                         />
@@ -374,6 +393,7 @@ const Create = () => {
                         <input
                           type="radio"
                           name="lab_testing"
+                          value="no"
                           className="form-check-input"
                           {...register("labTest")}
                         />
@@ -403,24 +423,27 @@ const Create = () => {
                         <input
                           type="text"
                           className="form-control "
-                          {...register("area")}
+                          // {...register("area")}
                         />
                       </div>
-                      <p style={{ color: "red" }}>{errors.area?.message}</p>
+                      {/* <p style={{ color: "red" }}>{errors.area?.message}</p> */}
                     </div>
                     <div className="col-sm-6 col-md-6 col-lg-3">
                       <div className="form-group">
                         <label>Country</label>
                         <select
                           className="form-control select"
-                          {...register("country")}
+                          // {...register("country")}
+                          onChange={(e) => handleCountryChange(e.target.value)}
                         >
                           <option value="">Select Country</option>
-                          <option>USA</option>
-                          <option>United Kingdom</option>
+                          {country &&
+                            country.map((val, key) => (
+                              <option value={val.id}>{val.name}</option>
+                            ))}
                         </select>
                       </div>
-                      <p style={{ color: "red" }}>{errors.country?.message}</p>
+                      {/* <p style={{ color: "red" }}>{errors.country?.message}</p> */}
                     </div>
 
                     <div className="col-sm-6 col-md-6 col-lg-3">
@@ -428,32 +451,38 @@ const Create = () => {
                         <label>State/Province</label>
                         <select
                           className="form-control select"
-                          {...register("state")}
+                          // {...register("state")}
+                          onChange={(e) => handleStateChange(e.target.value)}
                         >
                           <option value="">Select state</option>
 
-                          <option>California</option>
-                          <option>Alaska</option>
-                          <option>Alabama</option>
+                          {state &&
+                            state.map((val, key) => (
+                              <option value={val.id}>{val.name}</option>
+                            ))}
                         </select>
                       </div>
-                      <p style={{ color: "red" }}>{errors.state?.message}</p>
+                      {/* <p style={{ color: "red" }}>{errors.state?.message}</p> */}
                     </div>
                     <div className="col-sm-6 col-md-6 col-lg-3">
                       <div className="form-group">
                         <label>City</label>
                         <select
                           className="form-control select"
-                          {...register("city")}
+                          {...register("cityName")}
+                          onChange={handleCityChange}
                         >
                           <option value="">Select city</option>
 
-                          <option>California</option>
-                          <option>Alaska</option>
-                          <option>Alabama</option>
+                          {city &&
+                            city.map((val, key) => (
+                              <option value={val.name} data-cityid={val.id}>
+                                {val.name}
+                              </option>
+                            ))}
                         </select>
                       </div>
-                      <p style={{ color: "red" }}>{errors.city?.message}</p>
+                      <p style={{ color: "red" }}>{errors.cityName?.message}</p>
                     </div>
                     <div className="col-sm-6 col-md-6 col-lg-3">
                       <div className="form-group">
@@ -557,7 +586,7 @@ const Create = () => {
                     <label>Time Slot</label>
                     <select
                       className="form-control select"
-                      {...register("timeslot")}
+                      {...register("timeSlot")}
                     >
                       <option>Select slot</option>
                       <option>15</option>
@@ -565,7 +594,7 @@ const Create = () => {
                       <option>30</option>
                     </select>
                   </div>
-                  <p style={{ color: "red" }}>{errors.timeslot?.message}</p>
+                  <p style={{ color: "red" }}>{errors.timeSlot?.message}</p>
                 </div>
                 <div className="col-md-6">
                   <div className="form-group">
@@ -593,7 +622,7 @@ const Create = () => {
                               name="day" // Use a unique name for each select
                               //   value={row.day}
                               onChange={(e) => handleInputChange(e, index)}
-                              {...register(`selectedDays[${index}].day`)} // Register the input
+                              {...register(`availabilities[${index}].day`)} // Register the input
                             >
                               <option value="">Select Days</option>
                               <option value="Monday">Monday</option>
@@ -605,9 +634,9 @@ const Create = () => {
                               <option value="Sunday">Sunday</option>
                             </select>
                             <p style={{ color: "red" }}>
-                              {errors.selectedDays &&
-                                errors.selectedDays[index] &&
-                                errors.selectedDays[index].day?.message}
+                              {errors.availabilities &&
+                                errors.availabilities[index] &&
+                                errors.availabilities[index].day?.message}
                             </p>
                           </td>
 
@@ -618,7 +647,7 @@ const Create = () => {
                               name="fromTime" // Use a unique name for each input
                               //   value={row.fromTime}
                               onChange={(e) => handleInputChange(e, index)}
-                              {...register(`selectedDays[${index}].fromTime`)} // Register the input
+                              {...register(`availabilities[${index}].fromTime`)} // Register the input
                             />
                             &nbsp;&nbsp;&nbsp;
                             <label>To time:&nbsp;</label>
@@ -627,7 +656,7 @@ const Create = () => {
                               name="toTime" // Use a unique name for each input
                               //   value={row.toTime}
                               onChange={(e) => handleInputChange(e, index)}
-                              {...register(`selectedDays[${index}].toTime`)}
+                              {...register(`availabilities[${index}].toTime`)}
                             />
                           </td>
                           <td>

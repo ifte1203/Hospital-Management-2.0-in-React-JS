@@ -32,7 +32,6 @@ import {
   BrowserRouter,
 } from "react-router-dom";
 import Login from "./pages/Auth/Login";
-import TimeSlot from "./pages/Clinic/TimeSlot";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -52,7 +51,6 @@ function App() {
           <Route path="/create-clinic" element={<CreateClinic />} />
           <Route path="/clinic/show/:id" element={<ShowClinic />} />
           <Route path="/clinic/edit/:id" element={<EditClinic />} />
-          <Route path="/clinic-availability/edit/:id" element={<TimeSlot />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/edit-profile" element={<EditProfile />} />
           {/* <Route path="/entity/:entityType" element={<Entitypage />} /> */}

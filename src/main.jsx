@@ -9,7 +9,7 @@ import { persistStore } from "redux-persist";
 import { store, persistor } from "./store.js";
 
 // localStorage.clear();
-persistor.purge();
+// persistor.purge();
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

@@ -5,28 +5,17 @@ const formValidationSchema = Yup.object().shape({
   registrationNo: Yup.string().required("Registration Number is required"),
   clinicLoyaltyCentreNo: Yup.string(),
   clinicType: Yup.string().required("Clinic Type is required"),
-  email: Yup.string().email("Invalid email").required("Email is required"),
-  // alternate_email: Yup.string().email("invalid email"),
-  // phone: Yup.number()
-  //   .transform((value) => (Number.isNaN(value) ? null : value))
-  //   .nullable()
-  //   .test("min-length", "Please enter at least 10 digits", (value) => {
-  //     // Check if the value is null or undefined (nullable), or if it has at least 10 digits
-  //     return (
-  //       value === null || value === undefined || value.toString().length >= 10
-  //     );
-  //   })
-  //   .required("pls enter phone number"),
   phone: Yup.string().required("pls enter phone number"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
   telemedicine: Yup.string().required("pls select"),
   specialist: Yup.string().required("pls select"),
   labTest: Yup.string().required("pls select"),
   doctorPresence: Yup.string().required("pls select"),
   address: Yup.string().required("pls enter address"),
-  area: Yup.string().required("pls enter area"),
-  country: Yup.string().required("select country"),
-  state: Yup.string().required("select state"),
-  city: Yup.string().required("select city"),
+  // area: Yup.string().required("pls enter area"),
+  // country: Yup.string().required("select country"),
+  // state: Yup.string().required("select state"),
+  cityName: Yup.string().required("select city"),
   pincode: Yup.string()
     .typeError("Pincode must be a number")
     .required("Please enter a pin code"),
@@ -45,14 +34,11 @@ const formValidationSchema = Yup.object().shape({
     .test("required", "You need to provide a file", (file) => {
       return file && file.length;
     }),
-  timeslot: Yup.string()
+  timeSlot: Yup.string()
     .typeError("timeslot must be a number")
     .required("Please select"),
   gstinNo: Yup.string().required("pls enter gst number"),
-  // selectedDays: Yup.array()
-  //   .of(Yup.string())
-  //   .min(1, "Please select at least one day")
-  //   .required("Please select at least one day"),
+
   availabilities: Yup.array()
     .of(
       Yup.object().shape({
